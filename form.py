@@ -98,7 +98,7 @@ class ConfigForm(QWidget):
         selection_layout = QFormLayout()
         
         self.selection_method_combo = QComboBox(self)
-        self.selection_method_combo.addItems(['roulette', 'tournament', 'best'])
+        self.selection_method_combo.addItems(['tournament', 'roulette', 'best'])
         selection_layout.addRow(QLabel('Selection Method:'), self.selection_method_combo)
         
         self.select_best_amount_spin = QSpinBox(self)

@@ -65,3 +65,13 @@ class PlotWidget(QWidget):
         
         # Refresh the canvas
         self.canvas.draw()
+        
+    def save_plot(self, filepath):
+        """
+        Save the current plot to an image file.
+        
+        Args:
+            filepath: Path where to save the image
+        """
+        self.figure.savefig(filepath, dpi=300, bbox_inches='tight', facecolor=self.figure.get_facecolor())
+        return True

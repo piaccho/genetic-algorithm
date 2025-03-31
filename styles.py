@@ -10,6 +10,7 @@ def apply_styles(app):
       
       QLabel {
           color: #e0e7ff;
+          background-color: transparent;  /* Make label backgrounds transparent */
       }
       
       QGroupBox {
