@@ -20,10 +20,13 @@ Celem projektu jest implementacja algorytmu genetycznego do optymalizacji funkcj
 # Wybór funkcji testowych
  
  Funkcją wielu zmiennych jaką algortym genetczny będzie optymalizował będzie funkcja Hyperellipsoid.
+
 - Wzór w Latex:
+
 $$
 f(x)=\sum_{i=0}^{N-1} \sum_{j=0}^{i} x_j^2
 $$
+
 - Sugerowany zakres poszukiwań: `[-65.536, 65.536]` 
 - Globalne minima: `(0.0, [0.0, 0.0])`
 
@@ -35,11 +38,3 @@ $$
  4. Generowanie wykresów wartości funkcji w iteracjach. 
  5. Zapisywanie wyników do pliku/bazy danych. 
  
-# Sprawozdanie
-
-- Technologie użyte w projekcie.
-- Wymagania środowiskowe.
-- Opis wybranych funkcji testowych i ich optima.
-- Wykresy wyników.
-- Porównanie wyników dla różnych konfiguracji algorytmu.
-- Podsumowanie i analiza błędów. 

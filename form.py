@@ -135,11 +135,16 @@ class ConfigForm(QWidget):
         
         # Create a container for the submit button to span both columns
         button_container = QWidget()
-        button_layout = QVBoxLayout(button_container)
+        button_layout = QHBoxLayout(button_container)
+        
+        # Load config button
+        self.load_config_button = QPushButton('Load Configuration', self)
+        self.load_config_button.setMinimumHeight(40)
+        button_layout.addWidget(self.load_config_button)
         
         # Submit button
         self.submit_button = QPushButton('Start Algorithm', self)
-        self.submit_button.setMinimumHeight(40)  # Make button taller
+        self.submit_button.setMinimumHeight(40)
         button_layout.addWidget(self.submit_button)
         
         # Create final layout to combine columns and button
