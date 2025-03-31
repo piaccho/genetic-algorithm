@@ -1,6 +1,5 @@
 import numpy as np
 from chromosome import Chromosome
-from logger import log
 
 def single_point_crossover(parent1, parent2):
     """

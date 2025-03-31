@@ -1,5 +1,4 @@
 import numpy as np
-from logger import log
 
 def select_best(population, num_to_select, maximization=False):
     """

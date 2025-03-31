@@ -1,5 +1,4 @@
 import numpy as np
-from chromosome import Chromosome
 
 def inversion(chromosome):
     """

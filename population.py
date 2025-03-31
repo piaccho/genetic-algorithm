@@ -5,7 +5,6 @@ from selection_methods import select_best, roulette_wheel_selection, tournament_
 from cross_methods import single_point_crossover, two_point_crossover, uniform_crossover, granular_crossover
 from mutation import single_point_mutation, two_point_mutation, boundary_mutation
 from inversion import inversion
-from logger import log
 
 class Population:
     def __init__(self, size, chromosome_length, fitness_function, num_variables, begin_range, end_range):
