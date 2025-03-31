@@ -1,47 +1,95 @@
 from population import Population
-from fitness_functions import hyperellipsoid_function, rosenbrock_function
+from fitness_functions import choose_fitness_function
+from logger import log
+import math
 
 class GeneticAlgorithm:
-    def __init__(self, fitness_function, num_variables, population_size, chromosome_length, num_generations,
-                 crossover_probability, mutation_probability, inversion_probability, selection_method, 
-                 crossover_method, mutation_method):
-        self.population = Population(population_size, chromosome_length, fitness_function, num_variables,
-                                     -100, 100)  # Zakres do zdefiniowania lepiej w zależności od funkcji fitness
-        self.num_generations = num_generations
-        self.crossover_probability = crossover_probability
-        self.mutation_probability = mutation_probability
-        self.inversion_probability = inversion_probability
-        self.selection_method = selection_method
-        self.crossover_method = crossover_method
-        self.mutation_method = mutation_method
-        
-    def run(self):
-        for generation in range(self.num_generations):
-            print(f"Generation {generation + 1}")
-            self.population.evaluate_fitness()
-            self.population.selection(method=self.selection_method)
-            self.population.crossover(method=self.crossover_method, cross_probability=self.crossover_probability)
-            self.population.mutate(method=self.mutation_method, mutation_probability=self.mutation_probability)
-            self.population.apply_inversion(self.inversion_probability)
-            self.report_best()
-            
-    def report_best(self):
-        best_individual = max(self.population.individuals, key=lambda ind: ind.fitness)
-        print(f"Best Individual Fitness: {best_individual.fitness}")
+    def __init__(self, config):
+        self.config = config
+        self.fitness_function = choose_fitness_function(config.fitness_function)
+        self.population = Population(config.population_size,
+                                     self.compute_chromosome_length(),
+                                     self.fitness_function,
+                                     config.num_variables,
+                                     config.lower_bound,
+                                     config.upper_bound)
+        self.optimum = float('inf') if not config.maximization else float('-inf')
+        self.optimum_variables = None
+        self.progress_data = []
 
-# Example usage
-if __name__ == "__main__":
-    ga = GeneticAlgorithm(
-        fitness_function=hyperellipsoid_function,
-        num_variables=5,
-        population_size=100,
-        chromosome_length=50,  # length should be enough to encode the range adequately
-        num_generations=50,
-        crossover_probability=0.8,
-        mutation_probability=0.01,
-        inversion_probability=0.01,
-        selection_method='tournament',
-        crossover_method='uniform',
-        mutation_method='single_point'
-    )
-    ga.run()
+    def compute_chromosome_length(self):
+        """Compute chromosome length based on number of variables and precision required."""
+        return self.config.num_variables * math.ceil(math.log2((self.config.upper_bound - self.config.lower_bound) / self.config.precision))
+
+    def run(self):
+        """Run the genetic algorithm process for a set number of epochs."""
+        # Clear any previous progress data
+        self.progress_data = []
+        
+        for epoch in range(self.config.epochs_num):
+            self.iteration(epoch)
+        
+        log(f"Found optimum: [{self.optimum}, {self.optimum_variables}]")
+        
+        # Return the progress data for all epochs
+        return self.progress_data
+
+    def iteration(self, epoch):
+        """Execute a single iteration (epoch) of the genetic algorithm."""
+        self.evaluate_fitness()
+        self.report(epoch)
+        self.selection()
+        self.crossover()
+        self.mutate()
+        self.inversion()
+        
+    def evaluate_fitness(self):
+        """Evaluate the fitness of each individual in the population."""
+        self.population.evaluate_fitness()
+    
+    def report(self, epoch):
+        """Report the results of the current epoch and save progress data."""
+        best_individual = self.get_best()
+        current_best_fitness = best_individual.fitness
+        
+        # Update the optimum if this epoch's best is better
+        if self.config.maximization:
+            if current_best_fitness > self.optimum:
+                self.optimum = current_best_fitness
+                self.optimum_variables = best_individual.decode_chromosome(self.config.num_variables, self.config.lower_bound, self.config.upper_bound)
+        else:
+            if current_best_fitness < self.optimum:
+                self.optimum = current_best_fitness
+                self.optimum_variables = best_individual.decode_chromosome(self.config.num_variables, self.config.lower_bound, self.config.upper_bound)
+        
+        # Get current best variables
+        current_best_variables = best_individual.decode_chromosome(self.config.num_variables, self.config.lower_bound, self.config.upper_bound)
+        
+        # Create epoch data row:
+        # [epoch_number, population_size, current_best_fitness, x1, x2, ..., best_fitness_all_time]
+        epoch_data = [epoch + 1, len(self.population.individuals), current_best_fitness, *current_best_variables, self.optimum, *self.optimum_variables]
+        
+        # Store the data for this epoch
+        self.progress_data.append(epoch_data)
+        
+        log(f"Epoch {epoch + 1}\tPopulation: {len(self.population.individuals)}\tBest Fitness: {current_best_fitness}")
+    
+    def get_best(self):
+        """Returns the best individual from the population."""
+        return max(self.population.individuals, key=lambda ind: ind.fitness) if self.config.maximization else min(self.population.individuals, key=lambda ind: ind.fitness)
+    
+    def selection(self):
+        """Perform selection process as per the method defined in configuration."""
+        self.population.selection(self.config.selection_method, self.config.select_best_amount, self.config.select_tournament_size, self.config.maximization)
+    
+    def crossover(self):
+        """Perform crossover across the population members, based on probability."""
+        self.population.crossover(self.config.crossover_method, self.config.crossover_probability)
+    
+    def mutate(self):
+        """Mutate the population members, based on probability."""
+        self.population.mutate(self.config.mutation_method, self.config.mutation_probability)
+    
+    def inversion(self):
+        """Apply inversion operation to the population members, based on probability."""
+        self.population.apply_inversion(self.config.inversion_probability)

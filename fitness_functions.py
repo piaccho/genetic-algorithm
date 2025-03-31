@@ -1,3 +1,14 @@
+def choose_fitness_function(name):
+    """
+    Choose the fitness function based on the given name.
+    """
+    if name == 'hyperellipsoid':
+        return hyperellipsoid_function
+    elif name == 'rosenbrock':
+        return rosenbrock_function
+    else:
+        raise ValueError(f"Unknown fitness function: {name}")
+
 def hyperellipsoid_function(x):
     """
     Fitness function for the hyperellipsoid problem.
