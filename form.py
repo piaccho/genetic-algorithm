@@ -17,7 +17,7 @@ class ConfigForm(QWidget):
         bounds_layout = QFormLayout()
         
         self.fitness_function_combo = QComboBox(self)
-        self.fitness_function_combo.addItems(['hyperellipsoid', 'rosenbrock'])
+        self.fitness_function_combo.addItems(['hyperellipsoid', 'rosenbrock', 'hypersphere'])
         bounds_layout.addRow(QLabel('Fitness Function:'), self.fitness_function_combo)
         
         self.lower_bound_input = QLineEdit(self)

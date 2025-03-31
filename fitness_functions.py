@@ -4,10 +4,18 @@ def choose_fitness_function(name):
     """
     if name == 'hyperellipsoid':
         return hyperellipsoid_function
+    elif name == 'hypersphere':
+        return hypersphere
     elif name == 'rosenbrock':
         return rosenbrock_function
     else:
         raise ValueError(f"Unknown fitness function: {name}")
+
+def hypersphere(x):
+    """
+    Fitness function for the hypersphere problem.
+    """
+    return sum(xi ** 2 for xi in x)
 
 def hyperellipsoid_function(x):
     """
