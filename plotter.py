@@ -9,16 +9,22 @@ class PlotWidget(QWidget):
         self.layout = QVBoxLayout(self)
         
         # Create the figure and canvas for plotting
-        self.figure = Figure(figsize=(5, 4), dpi=100)
+        self.figure = Figure(figsize=(5, 4), dpi=100, facecolor='#1e2433')
         self.canvas = FigureCanvas(self.figure)
         self.layout.addWidget(self.canvas)
         
         # Initialize the plot
         self.axes = self.figure.add_subplot(111)
-        self.axes.set_title('Fitness Over Generations')
-        self.axes.set_xlabel('Generation')
-        self.axes.set_ylabel('Fitness')
-        self.axes.grid(True)
+        self.axes.set_title('Fitness Evolution', color='#e0e7ff')
+        self.axes.set_xlabel('Generation', color='#e0e7ff')
+        self.axes.set_ylabel('Fitness', color='#e0e7ff')
+        self.axes.grid(True, color='#3d5a80', linestyle='-', alpha=0.3)
+        self.axes.set_facecolor('#263041')
+        self.axes.tick_params(colors='#e0e7ff')
+        self.axes.spines['bottom'].set_color('#3d5a80')
+        self.axes.spines['top'].set_color('#3d5a80') 
+        self.axes.spines['right'].set_color('#3d5a80')
+        self.axes.spines['left'].set_color('#3d5a80')
 
         # Variables to store previous plot data
         self.current_fitness_line = None
@@ -45,15 +51,18 @@ class PlotWidget(QWidget):
         best_fitness = [result[-1] for result in results]
         
         # Plot the data
-        self.axes.plot(epochs, current_fitness, 'b-', label='Current Best Fitness')
-        self.axes.plot(epochs, best_fitness, 'r-', label='All-time Best Fitness')
-        
+        self.axes.plot(epochs, current_fitness, '#56cfe1', linewidth=2, marker='o', 
+                      markersize=4, label='Current Best Fitness')
+        self.axes.plot(epochs, best_fitness, '#ff66b3', linewidth=2, marker='s', 
+                      markersize=4, label='All-time Best Fitness')
+
         # Add labels and legend
-        self.axes.set_title('Fitness Evolution')
-        self.axes.set_xlabel('Generation')
-        self.axes.set_ylabel('Fitness')
-        self.axes.legend(loc='best')
-        self.axes.grid(True)
+        self.axes.set_title('Fitness Evolution', color='#e0e7ff')
+        self.axes.set_xlabel('Generation', color='#e0e7ff')
+        self.axes.set_ylabel('Fitness', color='#e0e7ff')
+        self.axes.legend(loc='best', facecolor='#263041', edgecolor='#3d5a80', labelcolor='#e0e7ff')
+        self.axes.grid(True, color='#3d5a80', linestyle='-', alpha=0.3)
+        self.axes.tick_params(colors='#e0e7ff')
         
         # Refresh the canvas
         self.canvas.draw()

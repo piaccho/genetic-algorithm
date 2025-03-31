@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Genetic Algorithm - Configuration")
-        self.setGeometry(100, 100, 900, 700)
+        self.setGeometry(100, 100, 700, 700)
         
         # Create stacked widget to switch between form and results view
         self.stacked_widget = QStackedWidget()
@@ -230,8 +230,8 @@ class MainWindow(QMainWindow):
             self.save_results_to_csv()
             
             # Show completion message
-            self.status_label.setStyleSheet("color: lightgreen; font-weight: bold;")
-            self.status_label.setText("Optimization completed! Results saved to results.csv")
+            self.status_label.setStyleSheet("color: #5eead4; font-weight: bold; font-size: 14px; padding: 10px;")
+            self.status_label.setText("✓ Optimization complete! Results saved to file.")
             
             # Enable the open file button now that algorithm is complete
             self.open_file_button.setEnabled(True)
@@ -280,12 +280,18 @@ class MainWindow(QMainWindow):
         QApplication.processEvents()
     
     def save_results_to_csv(self):
+        # Ensure the results directory exists
+        results_dir = os.path.abspath('./results')
+        os.makedirs(results_dir, exist_ok=True)
+        
+        # Generate a timestamped filename
         timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
         filename = f"results-{timestamp}.csv"
         
-        self.results_file_path = os.path.abspath(filename)
-        # Zapis do pliku CSV z nagłówkami
-        with open(filename, 'w', newline='') as file:
+        self.results_file_path = os.path.join(results_dir, filename)
+        
+        # Save to CSV file with headers
+        with open(self.results_file_path, 'w', newline='') as file:
             writer = csv.writer(file)
             
             # Generate and write headers

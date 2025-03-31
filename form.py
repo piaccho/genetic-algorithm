@@ -5,8 +5,13 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdi
 class ConfigForm(QWidget):
     def __init__(self):
         super().__init__()
-        main_layout = QVBoxLayout()
-
+        
+        # Create main horizontal layout to hold two columns
+        main_layout = QHBoxLayout()
+        
+        # Create left column
+        left_column = QVBoxLayout()
+        
         # Function and bounds section
         bounds_group = QGroupBox("Problem Definition")
         bounds_layout = QFormLayout()
@@ -33,7 +38,7 @@ class ConfigForm(QWidget):
         bounds_layout.addRow(QLabel('Number of Variables:'), self.num_variables_spin)
         
         bounds_group.setLayout(bounds_layout)
-        main_layout.addWidget(bounds_group)
+        left_column.addWidget(bounds_group)
         
         # Population settings
         pop_group = QGroupBox("Population Settings")
@@ -58,7 +63,10 @@ class ConfigForm(QWidget):
         pop_layout.addRow(QLabel('Maximization:'), self.maximization_check)
         
         pop_group.setLayout(pop_layout)
-        main_layout.addWidget(pop_group)
+        left_column.addWidget(pop_group)
+        
+        # Create right column
+        right_column = QVBoxLayout()
         
         # Genetic operations
         ops_group = QGroupBox("Genetic Operations")
@@ -83,7 +91,7 @@ class ConfigForm(QWidget):
         ops_layout.addRow(QLabel('Inversion Probability:'), self.inversion_prob_spin)
         
         ops_group.setLayout(ops_layout)
-        main_layout.addWidget(ops_group)
+        right_column.addWidget(ops_group)
         
         # Selection methods
         selection_group = QGroupBox("Selection Method")
@@ -104,7 +112,7 @@ class ConfigForm(QWidget):
         selection_layout.addRow(QLabel('Tournament Size:'), self.tournament_size_spin)
         
         selection_group.setLayout(selection_layout)
-        main_layout.addWidget(selection_group)
+        right_column.addWidget(selection_group)
         
         # Crossover and mutation methods
         methods_group = QGroupBox("Genetic Methods")
@@ -119,13 +127,29 @@ class ConfigForm(QWidget):
         methods_layout.addRow(QLabel('Mutation Method:'), self.mutation_method_combo)
         
         methods_group.setLayout(methods_layout)
-        main_layout.addWidget(methods_group)
-
+        right_column.addWidget(methods_group)
+        
+        # Add columns to main layout
+        main_layout.addLayout(left_column)
+        main_layout.addLayout(right_column)
+        
+        # Create a container for the submit button to span both columns
+        button_container = QWidget()
+        button_layout = QVBoxLayout(button_container)
+        
         # Submit button
         self.submit_button = QPushButton('Start Algorithm', self)
-        main_layout.addWidget(self.submit_button)
-
-        self.setLayout(main_layout)
+        self.submit_button.setMinimumHeight(40)  # Make button taller
+        button_layout.addWidget(self.submit_button)
+        
+        # Create final layout to combine columns and button
+        final_layout = QVBoxLayout()
+        column_container = QWidget()
+        column_container.setLayout(main_layout)
+        final_layout.addWidget(column_container)
+        final_layout.addWidget(button_container)
+        
+        self.setLayout(final_layout)
 
 
 def get_config_params_from_gui(form):
