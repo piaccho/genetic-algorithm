@@ -1,40 +1,39 @@
-# Wprowadzenie 
+# Introduction
 
-Celem projektu jest implementacja algorytmu genetycznego do optymalizacji funkcji wielu zmiennych. Projekt powinien być zaimplementowany w języku programowania Python. 
+The aim of the project is to implement a genetic algorithm for optimizing multi-variable functions. The project should be implemented in Python programming language.
 
-# Założenia projektu 
+# Project Assumptions
 
-1. Implementacja algorytmu genetycznego dla problemów maksymalizacji i minimalizacji funkcji. 
-2. Możliwość konfiguracji liczby zmiennych (np. 5, 10, 20, 27). 
- 
-# Elementy implementacji 
+1. Implementation of a genetic algorithm for function maximization and minimization problems.
+2. Ability to configure the number of variables (e.g., 5, 10, 20, 27).
 
- - Binarna reprezentacja chromosomu i konfiguracja dokładności.
- - Konfiguracja wielkości populacji.
- - Konfiguracja liczby epok.
- - Metody selekcji: najlepszych, ruletki, turniejowa.
- - Krzyżowanie: jednopunktowe, dwupunktowe, jednorodne, ziarniste.
- - Mutacje: brzegowa, jedno- i dwupunktowa.
- - Operator inwersji i strategia elitarna. 
- 
-# Wybór funkcji testowych
- 
- Funkcją wielu zmiennych jaką algortym genetczny będzie optymalizował będzie funkcja Hyperellipsoid.
+# Implementation Elements
 
-- Wzór w Latex:
+- Binary representation of chromosome and accuracy configuration.
+- Population size configuration.
+- Number of epochs configuration.
+- Selection methods: best selection, roulette wheel, tournament.
+- Crossover: single-point, two-point, uniform, granular.
+- Mutations: boundary, single-point, and two-point.
+- Inversion operator and elitist strategy.
+
+# Selection of Test Functions
+
+The multi-variable function that the genetic algorithm will optimize is the Hyperellipsoid function.
+
+- Formula in LaTeX:
 
 $$
 f(x)=\sum_{i=0}^{N-1} \sum_{j=0}^{i} x_j^2
 $$
 
-- Sugerowany zakres poszukiwań: `[-65.536, 65.536]` 
-- Globalne minima: `(0.0, [0.0, 0.0])`
+- Suggested search range: `[-65.536, 65.536]`
+- Global minimum: `(0.0, [0.0, 0.0])`
 
-# Aplikacja i wizualizacja 
+# Application and Visualization
 
- 1. Graficzny interfejs użytkownika. 
- 2. Możliwość konfiguracji parametrów algorytmu poprzez GUI. 
- 3. Wyświetlanie czasu obliczeń. 
- 4. Generowanie wykresów wartości funkcji w iteracjach. 
- 5. Zapisywanie wyników do pliku/bazy danych. 
- 
+1. Graphical user interface.
+2. Ability to configure algorithm parameters through the GUI.
+3. Display of computation time.
+4. Generation of function value graphs across iterations.
+5. Saving results to a file/database.
