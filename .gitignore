@@ -179,3 +179,5 @@ pyrightconfig.json
 */results/
 report.md
 TODO.md
+**/venv*/
+**/log*.txt
