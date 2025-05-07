@@ -95,6 +95,9 @@ def get_gene_type(gene_type_str):
 def run_test(config, func, logger, test_id):
     """Uruchamia pojedynczy test z daną konfiguracją"""
     logger.info(f"\nRunning test with configuration: {config}")
+
+    # Lista do przechowywania statystyk
+    generations_stats = []
     
     # Konfiguracja zakresów
     lower_boundary, upper_boundary = func.suggested_bounds()
@@ -127,7 +130,7 @@ def run_test(config, func, logger, test_id):
         }
         
         logger.info(f"Generation {stats['generation']}: Best = {stats['best_fitness']}")
-        return stats
+        generations_stats.append(stats) 
     
     # Konfiguracja GA
     ga_instance = pygad.GA(
@@ -158,12 +161,6 @@ def run_test(config, func, logger, test_id):
     # Zbieranie wyników
     solution, solution_fitness, solution_idx = ga_instance.best_solution()
     
-    # Zbieranie statystyk z wszystkich generacji
-    generations_stats = []
-    for _ in range(num_generations):
-        stats = ga_instance.on_generation(ga_instance)
-        generations_stats.append(stats)
-    
     results = {
         'config': config,
         'best_solution': solution.tolist(),
@@ -177,16 +174,6 @@ def run_test(config, func, logger, test_id):
     config_dir = get_config_dir(config, test_id)
     os.makedirs(config_dir, exist_ok=True)  # Upewniamy się, że katalog istnieje
     
-    # Wizualizacja - historia wartości fitness
-    plt.figure(figsize=(10, 6))
-    plt.plot(results['fitness_history'])
-    plt.title(f"Fitness History - {config}")
-    plt.xlabel("Generation")
-    plt.ylabel("Fitness")
-    plt.grid(True)
-    plt.savefig(f"{config_dir}/fitness_history.png")
-    plt.close()
-    
     # Wizualizacja - statystyki dla każdej generacji
     plt.figure(figsize=(12, 8))
     
@@ -195,7 +182,7 @@ def run_test(config, func, logger, test_id):
     best_values = [stats['best_fitness'] for stats in generations_stats]
     avg_values = [stats['average'] for stats in generations_stats]
     std_values = [stats['std'] for stats in generations_stats]
-    
+
     # Wykres wartości najlepszych
     plt.subplot(2, 1, 1)
     plt.plot(generations, best_values, 'b-', label='Best Fitness')
