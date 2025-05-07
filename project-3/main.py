@@ -154,19 +154,27 @@ def run_test(config, func, logger):
     
     # Zbieranie wyników
     solution, solution_fitness, solution_idx = ga_instance.best_solution()
+    
+    # Zbieranie statystyk z wszystkich generacji
+    generations_stats = []
+    for gen in range(num_generations):
+        stats = ga_instance.on_generation(ga_instance)
+        generations_stats.append(stats)
+    
     results = {
         'config': config,
         'best_solution': solution.tolist(),
         'best_fitness': -solution_fitness,  # Odwracamy znak
         'generations': ga_instance.generations_completed,
-        'fitness_history': [-x for x in ga_instance.best_solutions_fitness]  # Odwracamy znak
+        'fitness_history': [-x for x in ga_instance.best_solutions_fitness],  # Odwracamy znak
+        'generations_stats': generations_stats
     }
     
     # Zapisywanie wyników
     config_dir = get_config_dir(config)
     os.makedirs(config_dir, exist_ok=True)  # Upewniamy się, że katalog istnieje
     
-    # Wizualizacja
+    # Wizualizacja - historia wartości fitness
     plt.figure(figsize=(10, 6))
     plt.plot(results['fitness_history'])
     plt.title(f"Fitness History - {config}")
@@ -174,6 +182,41 @@ def run_test(config, func, logger):
     plt.ylabel("Fitness")
     plt.grid(True)
     plt.savefig(f"{config_dir}/fitness_history.png")
+    plt.close()
+    
+    # Wizualizacja - statystyki dla każdej generacji
+    plt.figure(figsize=(12, 8))
+    
+    # Przygotowanie danych
+    generations = range(1, num_generations + 1)
+    best_values = [stats['best_fitness'] for stats in generations_stats]
+    avg_values = [stats['average'] for stats in generations_stats]
+    std_values = [stats['std'] for stats in generations_stats]
+    
+    # Wykres wartości najlepszych
+    plt.subplot(2, 1, 1)
+    plt.plot(generations, best_values, 'b-', label='Best Fitness')
+    plt.title(f"Best Fitness Values - {config}")
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+    plt.grid(True)
+    plt.legend()
+    
+    # Wykres średniej i odchylenia standardowego
+    plt.subplot(2, 1, 2)
+    plt.plot(generations, avg_values, 'g-', label='Average Fitness')
+    plt.fill_between(generations, 
+                    [avg - std for avg, std in zip(avg_values, std_values)],
+                    [avg + std for avg, std in zip(avg_values, std_values)],
+                    alpha=0.2, color='g', label='±1 Std Dev')
+    plt.title(f"Population Statistics - {config}")
+    plt.xlabel("Generation")
+    plt.ylabel("Fitness")
+    plt.grid(True)
+    plt.legend()
+    
+    plt.tight_layout()
+    plt.savefig(f"{config_dir}/statistics.png")
     plt.close()
     
     # Zapisywanie wyników do JSON
