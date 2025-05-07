@@ -8,6 +8,28 @@ import json
 from datetime import datetime
 import os
 import shutil
+import itertools
+
+# Hardcoded test configurations
+# TEST_CONFIGS = [ 
+#     # Testy dla int
+#     {'selection': 'tournament', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'int'},  # default
+#     {'selection': 'rws', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'int'},
+#     {'selection': 'random', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'int'},
+#     {'selection': 'tournament', 'crossover': 'two_points', 'mutation': 'random', 'gene_type': 'int'},
+#     {'selection': 'tournament', 'crossover': 'uniform', 'mutation': 'random', 'gene_type': 'int'},
+#     {'selection': 'tournament', 'crossover': 'single_point', 'mutation': 'swap', 'gene_type': 'int'},
+#     {'selection': 'tournament', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'int'},
+    
+#     # Testy dla float
+#     {'selection': 'tournament', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'float'},  # default
+#     {'selection': 'rws', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'float'},
+#     {'selection': 'random', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'float'},
+#     {'selection': 'tournament', 'crossover': 'two_points', 'mutation': 'random', 'gene_type': 'float'},
+#     {'selection': 'tournament', 'crossover': 'uniform', 'mutation': 'random', 'gene_type': 'float'},
+#     {'selection': 'tournament', 'crossover': 'single_point', 'mutation': 'swap', 'gene_type': 'float'},
+#     {'selection': 'tournament', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'float'},
+# ]
 
 # Domyślna konfiguracja
 DEFAULT_CONFIG = {
@@ -17,25 +39,26 @@ DEFAULT_CONFIG = {
     'gene_type': 'int'
 }
 
-# Konfiguracje do przetestowania
+# Available options for each parameter
+SELECTION_METHODS = ['tournament', 'rws', 'random']
+CROSSOVER_METHODS = ['single_point', 'two_points', 'uniform']
+MUTATION_METHODS = ['random', 'swap']
+GENE_TYPES = ['int', 'float']
+
+# Generate all possible combinations
 TEST_CONFIGS = [
-    # Testy dla int
-    {'selection': 'tournament', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'int'},  # default
-    {'selection': 'rws', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'int'},
-    {'selection': 'random', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'int'},
-    {'selection': 'tournament', 'crossover': 'two_points', 'mutation': 'random', 'gene_type': 'int'},
-    {'selection': 'tournament', 'crossover': 'uniform', 'mutation': 'random', 'gene_type': 'int'},
-    {'selection': 'tournament', 'crossover': 'single_point', 'mutation': 'swap', 'gene_type': 'int'},
-    {'selection': 'tournament', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'int'},
-    
-    # Testy dla float
-    {'selection': 'tournament', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'float'},  # default
-    {'selection': 'rws', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'float'},
-    {'selection': 'random', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'float'},
-    {'selection': 'tournament', 'crossover': 'two_points', 'mutation': 'random', 'gene_type': 'float'},
-    {'selection': 'tournament', 'crossover': 'uniform', 'mutation': 'random', 'gene_type': 'float'},
-    {'selection': 'tournament', 'crossover': 'single_point', 'mutation': 'swap', 'gene_type': 'float'},
-    {'selection': 'tournament', 'crossover': 'single_point', 'mutation': 'random', 'gene_type': 'float'},
+    {
+        'selection': selection,
+        'crossover': crossover,
+        'mutation': mutation,
+        'gene_type': gene_type
+    }
+    for selection, crossover, mutation, gene_type in itertools.product(
+        SELECTION_METHODS,
+        CROSSOVER_METHODS,
+        MUTATION_METHODS,
+        GENE_TYPES
+    )
 ]
 
 # Konfiguracja algorytmu genetycznego
