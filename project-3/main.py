@@ -44,11 +44,12 @@ func = bf.Hyperellipsoid(n_dimensions=num_genes)
 
 # Parametry algorytmu
 num_generations = 100
-sol_per_pop = 80
+sol_per_pop = 100
 num_parents_mating = 50
 mutation_num_genes = 1
+mutation_probability = 0.1
 keep_elitism = 1
-K_tournament = 3
+K_tournament = 5
 
 def get_config_dir(config, test_id):
     """Tworzy nazwę katalogu dla danej konfiguracji"""
@@ -126,7 +127,8 @@ def run_test(config, func, logger, test_id):
             'min': float(np.min(tmp)),
             'max': float(np.max(tmp)),
             'average': float(np.average(tmp)),
-            'std': float(np.std(tmp))
+            'std': float(np.std(tmp)),
+            'population': ga_instance.population.tolist() 
         }
         
         logger.info(f"Generation {stats['generation']}: Best = {stats['best_fitness']}")
@@ -142,14 +144,15 @@ def run_test(config, func, logger, test_id):
         init_range_low=init_range_low,
         init_range_high=init_range_high,
         mutation_num_genes=mutation_num_genes,
+        mutation_probability=mutation_probability,
         parent_selection_type=config['selection'],
         crossover_type=config['crossover'],
         mutation_type=config['mutation'],
         gene_type=get_gene_type(config['gene_type']),
         keep_elitism=keep_elitism,
         K_tournament=K_tournament,
-        random_mutation_max_val=upper_boundary[0],
-        random_mutation_min_val=lower_boundary[0],
+        random_mutation_max_val=1.0,
+        random_mutation_min_val=-1.0,
         logger=logger,
         on_generation=on_generation,
         parallel_processing=['thread', 4]
@@ -207,6 +210,27 @@ def run_test(config, func, logger, test_id):
     
     plt.tight_layout()
     plt.savefig(f"{config_dir}/statistics.png")
+    plt.close()
+
+    # Wykres populacji dla każdej generacji co 10 
+    config_dir = get_config_dir(config, test_id)
+    selected_generations = generations_stats[::10]
+    num_plots = len(selected_generations)
+    rows = int(np.ceil(np.sqrt(num_plots)))
+    cols = int(np.ceil(num_plots / rows))
+    
+    plt.figure(figsize=(cols*4, rows*4))
+    for i, stats in enumerate(selected_generations):
+        plt.subplot(rows, cols, i+1)
+        population = np.array(stats['population'])
+        plt.scatter(population[:, 0], population[:, 1], alpha=0.5)
+        plt.title(f"Generation {stats['generation']}")
+        plt.xlabel("x1")
+        plt.ylabel("x2")
+        plt.grid(True)
+    
+    plt.tight_layout()
+    plt.savefig(f"{config_dir}/population_evolution.png")
     plt.close()
     
     # Zapisywanie wyników do JSON
