@@ -50,14 +50,17 @@ mutation_num_genes = 1
 keep_elitism = 1
 K_tournament = 3
 
-def get_config_dir(config):
+def get_config_dir(config, test_id):
     """Tworzy nazwę katalogu dla danej konfiguracji"""
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return f"results/{config['gene_type']}_{config['selection']}_{config['crossover']}_{config['mutation']}_{timestamp}"
+    gene_type = config['gene_type']
+    selection = config['selection']
+    crossover = config['crossover']
+    mutation = config['mutation']
+    return f"results/{gene_type}/{test_id}_{selection}_{crossover}_{mutation}"
 
-def setup_logger(config):
+def setup_logger(config, test_id):
     """Konfiguruje logger z odpowiednią ścieżką do pliku"""
-    config_dir = get_config_dir(config)
+    config_dir = get_config_dir(config, test_id)
     os.makedirs(config_dir, exist_ok=True)
     
     logger = logging.getLogger(config_dir)
@@ -89,7 +92,7 @@ def get_gene_type(gene_type_str):
     else:
         raise ValueError(f"Nieznany typ genu: {gene_type_str}")
 
-def run_test(config, func, logger):
+def run_test(config, func, logger, test_id):
     """Uruchamia pojedynczy test z daną konfiguracją"""
     logger.info(f"\nRunning test with configuration: {config}")
     
@@ -157,7 +160,7 @@ def run_test(config, func, logger):
     
     # Zbieranie statystyk z wszystkich generacji
     generations_stats = []
-    for gen in range(num_generations):
+    for _ in range(num_generations):
         stats = ga_instance.on_generation(ga_instance)
         generations_stats.append(stats)
     
@@ -171,7 +174,7 @@ def run_test(config, func, logger):
     }
     
     # Zapisywanie wyników
-    config_dir = get_config_dir(config)
+    config_dir = get_config_dir(config, test_id)
     os.makedirs(config_dir, exist_ok=True)  # Upewniamy się, że katalog istnieje
     
     # Wizualizacja - historia wartości fitness
@@ -230,6 +233,8 @@ def main():
     if os.path.exists('results'):
         shutil.rmtree('results')
     os.makedirs('results')
+    os.makedirs('results/int', exist_ok=True)
+    os.makedirs('results/float', exist_ok=True)
     
     # Inicjalizacja funkcji testowej
     func = bf.Hyperellipsoid(n_dimensions=num_genes)
@@ -238,15 +243,14 @@ def main():
     all_results = []
     
     # Uruchomienie testów
-    for config in TEST_CONFIGS:
-        logger = setup_logger(config)
-        results = run_test(config, func, logger)
+    for i, config in enumerate(TEST_CONFIGS, 1):
+        logger = setup_logger(config, i)
+        results = run_test(config, func, logger, i)
         all_results.append(results)
         logger.handlers.clear()
     
     # Zapisywanie zbiorczych wyników
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    with open(f'results/all_results_{timestamp}.json', 'w') as f:
+    with open(f'results/all_results.json', 'w') as f:
         json.dump(all_results, f, indent=2)
 
 if __name__ == "__main__":
